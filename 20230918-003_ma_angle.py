@@ -1,7 +1,7 @@
 # TODO: advance: build DB
 # TODO: split code - 1: gets API data and write to the DB
 # TODO: split code - 2: read data and calculate result
-
+# TODO: FIX MA_SHORT - filter stock that below MA_LONG
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,8 +21,8 @@ output = {}
 top_5_ma_angle_long = []
 top_5_ma_angle_short = []
 bottom_5_closest_ma_long = []
-FILE_NAME = 'tickers_200B.txt'
-# FILE_NAME = 'tickers_2B-10B.txt'
+# FILE_NAME = 'tickers_200B.txt'
+FILE_NAME = 'tickers_2B-10B.txt'
 
 # functions
 def get_stock_data(stock, startdate, enddate, period, interval):
