@@ -18,9 +18,9 @@ START_DATE = '2023-02-15'
 END_DATE = datetime.datetime.now()
 INTERVAL = '1d'
 output = {}
-top_5_ma_angle_long = []
-top_5_ma_angle_short = []
-bottom_5_closest_ma_long = []
+top_10_ma_angle_long = []
+top_10_ma_angle_short = []
+bottom_10_closest_ma_long = []
 # FILE_NAME = 'tickers_200B.txt'
 FILE_NAME = 'tickers_2B-10B.txt'
 
@@ -64,73 +64,73 @@ def create_output_dictionary(close_price, stock_name):
 
 def find_top_stocks():
 
-    global top_5_ma_angle_long
-    global top_5_ma_angle_short
-    global bottom_5_closest_ma_long
+    global top_10_ma_angle_long
+    global top_10_ma_angle_short
+    global bottom_10_closest_ma_long
 
     # Iterate through the dictionary
     for stock_symbol, data in output.items():
         if 'ma_angle_long' in data:  # Check if the key 'ma_angle_long' exists
             ma_angle_long = data['ma_angle_long']
-            top_5_ma_angle_long.append((stock_symbol, ma_angle_long))
+            top_10_ma_angle_long.append((stock_symbol, ma_angle_long))
         
         if 'ma_angle_short' in data:  # Check if the key 'ma_angle_short' exists
             ma_angle_short = data['ma_angle_short']
-            top_5_ma_angle_short.append((stock_symbol, ma_angle_short))
+            top_10_ma_angle_short.append((stock_symbol, ma_angle_short))
         
         if 'closest_ma_long' in data:  # Check if the key 'closest_ma_long' exists
             closest_ma_long = data['closest_ma_long']
-            bottom_5_closest_ma_long.append((stock_symbol, closest_ma_long))
+            bottom_10_closest_ma_long.append((stock_symbol, closest_ma_long))
 
     # Sort the lists based on their respective attributes
-    top_5_ma_angle_short.sort(key=lambda x: x[1], reverse=True)
-    top_5_ma_angle_long.sort(key=lambda x: x[1], reverse=True)
-    bottom_5_closest_ma_long.sort(key=lambda x: x[1])
+    top_10_ma_angle_short.sort(key=lambda x: x[1], reverse=True)
+    top_10_ma_angle_long.sort(key=lambda x: x[1], reverse=True)
+    bottom_10_closest_ma_long.sort(key=lambda x: x[1])
 
-    # Take the top 5 and bottom 5 entries for each attribute
-    top_5_ma_angle_long = top_5_ma_angle_long[:5]
-    top_5_ma_angle_short = top_5_ma_angle_short[:5]
-    bottom_5_closest_ma_long = bottom_5_closest_ma_long[:5]
+    # Take the Top 10 and Bottom 10  entries for each attribute
+    top_10_ma_angle_long = top_10_ma_angle_long[:10]
+    top_10_ma_angle_short = top_10_ma_angle_short[:10]
+    bottom_10_closest_ma_long = bottom_10_closest_ma_long[:10]
 
 def print_output():
 
-    print("\nTop 5 Highest 'ma_angle_long':")
-    for i, (stock_symbol, ma_angle_long) in enumerate(top_5_ma_angle_long):
+    print("\nTop 10 Highest 'ma_angle_long':")
+    for i, (stock_symbol, ma_angle_long) in enumerate(top_10_ma_angle_long):
         print(f"{i + 1}. Stock: {stock_symbol}, MA Angle long: {ma_angle_long}")
 
-    print("\nTop 5 Highest 'ma_angle_short':")
-    for i, (stock_symbol, ma_angle_short) in enumerate(top_5_ma_angle_short):
+    print("\nTop 10 Highest 'ma_angle_short':")
+    for i, (stock_symbol, ma_angle_short) in enumerate(top_10_ma_angle_short):
         print(f"{i + 1}. Stock: {stock_symbol}, MA Angle short: {ma_angle_short}")
 
-    print("\n5 Lowest 'closest_ma_long':")
-    for i, (stock_symbol, closest_ma_long) in enumerate(bottom_5_closest_ma_long):
+    print("\n10 Lowest 'closest_ma_long':")
+    for i, (stock_symbol, closest_ma_long) in enumerate(bottom_10_closest_ma_long):
         print(f"{i + 1}. Stock: {stock_symbol}, Closest MA long: {closest_ma_long}")
 
 
-# Function to plot the close prices of the top 5 stocks with the highest 'ma_angle_long' as percentages
-def plot_top_5_ma_angle_long():
+# Function to plot the close prices of the Top 10 stocks with the highest 'ma_angle_long' as percentages
+def plot_top_10_ma_angle_long():
     import matplotlib.pyplot as plt
 
-    # Get the top 5 stocks with the highest 'ma_angle_long'
-    top_5_ma_angle_long_stocks = [stock_symbol for stock_symbol, _ in top_5_ma_angle_long]
+    # Get the Top 10 stocks with the highest 'ma_angle_long'
+    top_10_ma_angle_long_stocks = [stock_symbol for stock_symbol, _ in top_10_ma_angle_long]
 
     # Fetch the close prices and ma_series for these stocks
-    stock_data = yf.download(tickers=top_5_ma_angle_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    stock_data = yf.download(tickers=top_10_ma_angle_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
     
     # Plot the close prices for each stock
     plt.figure(figsize=(12, 6))
-    for stock_symbol in top_5_ma_angle_long_stocks:
+    for stock_symbol in top_10_ma_angle_long_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
         plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
 
     # Add a horizontal line for the MA value on the Y-axis
-    for stock_symbol in top_5_ma_angle_long_stocks:
+    for stock_symbol in top_10_ma_angle_long_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
         plt.axhline(y=100, color='gray', linestyle='--')
 
     plt.xlabel('Date')
     plt.ylabel('Close Price (%)')
-    plt.title('Close Prices of Top 5 Stocks with Highest MA Angle Long (as Percentage of MA)')
+    plt.title('Close Prices of Top 10 Stocks with Highest MA Angle Long (as Percentage of MA)')
     plt.legend(loc='upper left')
     plt.grid(True)
 
@@ -142,30 +142,30 @@ def plot_top_5_ma_angle_long():
 
 
 
-# Function to plot the close prices of the top 5 stocks with the highest 'ma_angle_short' as percentages
-def plot_top_5_ma_angle_short():
+# Function to plot the close prices of the Top 10 stocks with the highest 'ma_angle_short' as percentages
+def plot_top_10_ma_angle_short():
     import matplotlib.pyplot as plt
 
-    # Get the top 5 stocks with the highest 'ma_angle_short'
-    top_5_ma_angle_short_stocks = [stock_symbol for stock_symbol, _ in top_5_ma_angle_short]
+    # Get the Top 10 stocks with the highest 'ma_angle_short'
+    top_10_ma_angle_short_stocks = [stock_symbol for stock_symbol, _ in top_10_ma_angle_short]
 
     # Fetch the close prices and ma_series for these stocks
-    stock_data = yf.download(tickers=top_5_ma_angle_short_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    stock_data = yf.download(tickers=top_10_ma_angle_short_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
     
     # Plot the close prices for each stock
     plt.figure(figsize=(12, 6))
-    for stock_symbol in top_5_ma_angle_short_stocks:
+    for stock_symbol in top_10_ma_angle_short_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_SHORT).mean()
         plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
 
     # Add a horizontal line for the MA value on the Y-axis
-    for stock_symbol in top_5_ma_angle_short_stocks:
+    for stock_symbol in top_10_ma_angle_short_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_SHORT).mean()
         plt.axhline(y=100, color='gray', linestyle='--')
 
     plt.xlabel('Date')
     plt.ylabel('Close Price (%)')
-    plt.title('Close Prices of Top 5 Stocks with Highest MA Angle Short (as Percentage of MA)')
+    plt.title('Close Prices of Top 10 Stocks with Highest MA Angle Short (as Percentage of MA)')
     plt.legend(loc='upper left')
     plt.grid(True)
 
@@ -176,30 +176,30 @@ def plot_top_5_ma_angle_short():
 
 
 
-# Function to plot the close prices of the top 5 stocks with the lowest 'closest_ma_long' as percentages
-def plot_bottom_5_closest_ma_long():
+# Function to plot the close prices of the Top 10 stocks with the lowest 'closest_ma_long' as percentages
+def plot_bottom_10_closest_ma_long():
     import matplotlib.pyplot as plt
 
-    # Get the top 5 stocks with the lowest 'closest_ma_long'
-    bottom_5_closest_ma_long_stocks = [stock_symbol for stock_symbol, _ in bottom_5_closest_ma_long]
+    # Get the Top 10 stocks with the lowest 'closest_ma_long'
+    bottom_10_closest_ma_long_stocks = [stock_symbol for stock_symbol, _ in bottom_10_closest_ma_long]
 
     # Fetch the close prices and ma_series for these stocks
-    stock_data = yf.download(tickers=bottom_5_closest_ma_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    stock_data = yf.download(tickers=bottom_10_closest_ma_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
     
     # Plot the close prices for each stock
     plt.figure(figsize=(12, 6))
-    for stock_symbol in bottom_5_closest_ma_long_stocks:
+    for stock_symbol in bottom_10_closest_ma_long_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
         plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
 
     # Add a horizontal line for the MA value on the Y-axis
-    for stock_symbol in bottom_5_closest_ma_long_stocks:
+    for stock_symbol in bottom_10_closest_ma_long_stocks:
         ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
         plt.axhline(y=100, color='gray', linestyle='--')
 
     plt.xlabel('Date')
     plt.ylabel('Close Price (%)')
-    plt.title('Close Prices of Bottom 5 Stocks with Lowest Closest MA Long (as Percentage of MA)')
+    plt.title('Close Prices of Bottom 10  Stocks with Lowest Closest MA Long (as Percentage of MA)')
     plt.legend(loc='upper left')
     plt.grid(True)
 
@@ -225,9 +225,9 @@ def main():
 
     find_top_stocks()
     print_output()
-    plot_top_5_ma_angle_long()
-    plot_top_5_ma_angle_short()
-    plot_bottom_5_closest_ma_long()
+    plot_top_10_ma_angle_long()
+    plot_top_10_ma_angle_short()
+    plot_bottom_10_closest_ma_long()
     # Measure the end time
     end_time = time.time()
     execution_time = end_time - start_time
