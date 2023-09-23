@@ -1,5 +1,3 @@
-# TODO: clean code
-# TODO: Build output object
 # TODO: advance: build DB
 # TODO: split code - 1: gets API data and write to the DB
 # TODO: split code - 2: read data and calculate result
@@ -10,13 +8,14 @@ import numpy as np
 import yfinance as yf
 import time
 import datetime
+import matplotlib.ticker as mtick
 
 # constants
 MA_LONG = 150 #150
 MA_SHORT = 5 #20
 PERIOD = '1d'
-START_DATE = '2022-03-22'
-END_DATE = datetime.datetime.now() #'2023-09-22'
+START_DATE = '2023-02-15'
+END_DATE = datetime.datetime.now()
 INTERVAL = '1d'
 output = {}
 top_5_ma_angle_long = []
@@ -68,6 +67,7 @@ def find_top_stocks():
     global top_5_ma_angle_long
     global top_5_ma_angle_short
     global bottom_5_closest_ma_long
+
     # Iterate through the dictionary
     for stock_symbol, data in output.items():
         if 'ma_angle_long' in data:  # Check if the key 'ma_angle_long' exists
@@ -106,6 +106,110 @@ def print_output():
     for i, (stock_symbol, closest_ma_long) in enumerate(bottom_5_closest_ma_long):
         print(f"{i + 1}. Stock: {stock_symbol}, Closest MA long: {closest_ma_long}")
 
+
+# Function to plot the close prices of the top 5 stocks with the highest 'ma_angle_long' as percentages
+def plot_top_5_ma_angle_long():
+    import matplotlib.pyplot as plt
+
+    # Get the top 5 stocks with the highest 'ma_angle_long'
+    top_5_ma_angle_long_stocks = [stock_symbol for stock_symbol, _ in top_5_ma_angle_long]
+
+    # Fetch the close prices and ma_series for these stocks
+    stock_data = yf.download(tickers=top_5_ma_angle_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    
+    # Plot the close prices for each stock
+    plt.figure(figsize=(12, 6))
+    for stock_symbol in top_5_ma_angle_long_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
+        plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
+
+    # Add a horizontal line for the MA value on the Y-axis
+    for stock_symbol in top_5_ma_angle_long_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
+        plt.axhline(y=100, color='gray', linestyle='--')
+
+    plt.xlabel('Date')
+    plt.ylabel('Close Price (%)')
+    plt.title('Close Prices of Top 5 Stocks with Highest MA Angle Long (as Percentage of MA)')
+    plt.legend(loc='upper left')
+    plt.grid(True)
+
+    # Format Y-axis as percentages
+    plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter())
+
+    plt.show()
+
+
+
+
+# Function to plot the close prices of the top 5 stocks with the highest 'ma_angle_short' as percentages
+def plot_top_5_ma_angle_short():
+    import matplotlib.pyplot as plt
+
+    # Get the top 5 stocks with the highest 'ma_angle_short'
+    top_5_ma_angle_short_stocks = [stock_symbol for stock_symbol, _ in top_5_ma_angle_short]
+
+    # Fetch the close prices and ma_series for these stocks
+    stock_data = yf.download(tickers=top_5_ma_angle_short_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    
+    # Plot the close prices for each stock
+    plt.figure(figsize=(12, 6))
+    for stock_symbol in top_5_ma_angle_short_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_SHORT).mean()
+        plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
+
+    # Add a horizontal line for the MA value on the Y-axis
+    for stock_symbol in top_5_ma_angle_short_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_SHORT).mean()
+        plt.axhline(y=100, color='gray', linestyle='--')
+
+    plt.xlabel('Date')
+    plt.ylabel('Close Price (%)')
+    plt.title('Close Prices of Top 5 Stocks with Highest MA Angle Short (as Percentage of MA)')
+    plt.legend(loc='upper left')
+    plt.grid(True)
+
+    # Format Y-axis as percentages
+    plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter())
+
+    plt.show()
+
+
+
+# Function to plot the close prices of the top 5 stocks with the lowest 'closest_ma_long' as percentages
+def plot_bottom_5_closest_ma_long():
+    import matplotlib.pyplot as plt
+
+    # Get the top 5 stocks with the lowest 'closest_ma_long'
+    bottom_5_closest_ma_long_stocks = [stock_symbol for stock_symbol, _ in bottom_5_closest_ma_long]
+
+    # Fetch the close prices and ma_series for these stocks
+    stock_data = yf.download(tickers=bottom_5_closest_ma_long_stocks, start=START_DATE, end=END_DATE, interval=INTERVAL, period=PERIOD, progress=False)
+    
+    # Plot the close prices for each stock
+    plt.figure(figsize=(12, 6))
+    for stock_symbol in bottom_5_closest_ma_long_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
+        plt.plot(stock_data.index, stock_data['Close'][stock_symbol] / ma_series.iloc[-1] * 100, label=f'{stock_symbol} - MA={ma_series.iloc[-1]:.2f}%')
+
+    # Add a horizontal line for the MA value on the Y-axis
+    for stock_symbol in bottom_5_closest_ma_long_stocks:
+        ma_series = stock_data['Close'][stock_symbol].rolling(MA_LONG).mean()
+        plt.axhline(y=100, color='gray', linestyle='--')
+
+    plt.xlabel('Date')
+    plt.ylabel('Close Price (%)')
+    plt.title('Close Prices of Bottom 5 Stocks with Lowest Closest MA Long (as Percentage of MA)')
+    plt.legend(loc='upper left')
+    plt.grid(True)
+
+    # Format Y-axis as percentages
+    plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter())
+
+    plt.show()
+
+
+
 def main():
     # Measure the start time
     start_time = time.time()
@@ -121,7 +225,9 @@ def main():
 
     find_top_stocks()
     print_output()
-
+    plot_top_5_ma_angle_long()
+    plot_top_5_ma_angle_short()
+    plot_bottom_5_closest_ma_long()
     # Measure the end time
     end_time = time.time()
     execution_time = end_time - start_time
