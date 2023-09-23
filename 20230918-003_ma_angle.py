@@ -92,16 +92,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-{
-    'BABA\n': -10000, 
-    'BAC\n': -10000,
-    'ticker:string': 
-    {
-        'price:string': 'number',
-        'ma150:string': 'number',
-        'ma150Angle:string': 'number',
-        'price5daysAgo:string':'number'
-    }  
-}
