@@ -15,7 +15,8 @@ def stock_get(ticker):
 
         stock_data.ticker = ticker
 
-        # Calculate the 50-day and 150-day SMAs
+        # Calculate the SMAs
+        stock_data['SMA20'] = stock_data['Close'].rolling(window=20).mean()
         stock_data['SMA50'] = stock_data['Close'].rolling(window=50).mean()
         stock_data['SMA150'] = stock_data['Close'].rolling(window=150).mean()
         stock_data['SMA200'] = stock_data['Close'].rolling(window=200).mean()
