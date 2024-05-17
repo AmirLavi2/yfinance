@@ -1,0 +1,10 @@
+#chartContainer {
+    display: flex;
+    flex-wrap: wrap;
+    height:40vh; width:80vw
+}
+.chartCanvas {
+    flex: 1 1 calc(20%); /* 4 charts per row with some margin */
+    /* margin: 10px; */
+    min-width: 100px; /* Ensure charts are not too small */
+}
