@@ -33,7 +33,7 @@ connection.connect((err) => {
 });
 
 // Query to select all rows from the 'stocks' table
-const query = `SELECT * FROM stocks where Date > '2024-03-01' limit 500`;
+const query = `SELECT * FROM stocks where Date > '2024-01-01'`;
 
 
 

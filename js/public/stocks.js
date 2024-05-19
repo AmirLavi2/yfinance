@@ -26,6 +26,11 @@ function renderCharts() {
             c: data.Close
         }));
 
+        let sma150Data = stockData[ticker].map(data => ({
+            x: Date.parse(data.Date),
+            y: data.SMA150
+        })).filter(data => data.y !== null);
+
         if (chartCount % 4 === 0) {
             rowDiv = document.createElement('div');
             rowDiv.className = 'chart-row';
@@ -33,6 +38,8 @@ function renderCharts() {
         }
 
         let canvas = document.createElement('canvas');
+        canvas.style.maxWidth = '300px';
+        canvas.style.maxHeight = '200px';
         rowDiv.appendChild(canvas);
 
         let ctx = canvas.getContext('2d');
@@ -42,10 +49,22 @@ function renderCharts() {
                 datasets: [{
                     label: ticker,
                     data: candlestickData,
+                    yAxisID: 'y',
+                    type: 'candlestick'
+                },
+                {
+                    label: 'SMA150',
+                    data: sma150Data,
+                    borderColor: 'blue',
+                    borderWidth: 1,
+                    fill: false,
+                    yAxisID: 'y',
+                    type: 'line'
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true, // Maintain aspect ratio to avoid stretching
                 scales: {
                     x: {
                         type: 'time',
@@ -70,6 +89,7 @@ function renderCharts() {
         chartCount++;
     });
 }
+
 
 
 //// stockData EXAMPLE:
