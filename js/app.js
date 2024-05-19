@@ -9,7 +9,7 @@ const { Server: SOCKET_SERVER } = require('socket.io');
 APP.use(BODY_PARSER);
 APP.use(EXPRESS.static('public'));
 
-HTTP_SERVER.listen(process.env.HTTP_PORT, () => console.log('http://localhost:'+process.env.HTTP_PORT));
+HTTP_SERVER.listen(process.env.HTTP_PORT, () => console.log('http://localhost:' + process.env.HTTP_PORT));
 
 // MySQL database configuration
 const db_config = {
@@ -33,7 +33,7 @@ connection.connect((err) => {
 });
 
 // Query to select all rows from the 'stocks' table
-const query = `SELECT * FROM stocks where Date > '2024-01-01'`;
+const query = `SELECT * FROM stocks where Date > '2024-03-01' limit 500`;
 
 
 
@@ -41,15 +41,15 @@ const query = `SELECT * FROM stocks where Date > '2024-01-01'`;
 function groupDataByTicker(data) {
     const groupedData = {};
     data.forEach(entry => {
-      if (!(entry.ticker in groupedData)) {
-        groupedData[entry.ticker] = [];
-      }
-      groupedData[entry.ticker].push(entry);
+        if (!(entry.ticker in groupedData)) {
+            groupedData[entry.ticker] = [];
+        }
+        groupedData[entry.ticker].push(entry);
     });
     return groupedData;
-  }
-  
- 
+}
+
+
 
 let data;
 
@@ -62,13 +62,13 @@ connection.query(query, (err, rows) => {
             console.log('got this message from client:', msg);
             IO.emit('chat message back', data);
         });
-    
+
         socket.on('pointAdd', msg => {
             console.log(msg);
 
             IO.emit('chat message back', data);
         });
-    
+
     });
 
     if (err) {

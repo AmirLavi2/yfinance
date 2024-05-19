@@ -22,20 +22,21 @@ function renderCharts(data) {
         container.appendChild(canvas);
 
         const stockData = data[ticker];
-        const prices = stockData.map(entry => ({
+        const candles = stockData.map(entry => ({
             x: new Date(entry.Date),
-            y: entry.Close
+            o: entry.Open,
+            h: entry.High,
+            l: entry.Low,
+            c: entry.Close
         }));
 
         new Chart(canvas.getContext('2d'), {
-            type: 'line',
+            type: 'candlestick',
             data: {
                 datasets: [{
                     label: ticker,
-                    data: prices,
-                    fill: false,
-                    borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16), // Random color
-                    tension: 0.4
+                    data: candles,
+                    borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16) // Random color
                 }]
             },
             options: {
@@ -70,6 +71,11 @@ function renderCharts(data) {
                             display: true,
                             text: 'Price'
                         }
+                    }
+                },
+                elements: {
+                    candlestick: {
+                        barThickness: 10 // Adjust the thickness here
                     }
                 }
             }
