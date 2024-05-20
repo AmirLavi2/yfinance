@@ -10,6 +10,48 @@ socket.on('chat message back', msg => {
     renderCharts();
 });
 
+function findStrat(stok) {
+    let lastItem = stok[stok.length-1];
+    let secondLastItem = stok[stok.length-2];
+    let thirdLastItem = stok[stok.length-3];
+    let fourthLastItem = stok[stok.length-4];
+    let stratArr = [];
+    
+    // check third from last candle
+    if(fourthLastItem.High > thirdLastItem.High) {
+        if(fourthLastItem.Low < thirdLastItem.Low){
+            stratArr.push(1) // console.log('third candle is 1');
+        } else stratArr.push(2) // console.log('third candle is 2');
+    } else {
+        if(fourthLastItem.Low < thirdLastItem.Low) {
+            stratArr.push(2) // console.log('third candle is 2');
+        } else stratArr.push(3) // console.log('third candle is 3');
+    }
+    
+    // check second from last candle
+    if(thirdLastItem.High > secondLastItem.High) {
+        if(thirdLastItem.Low < secondLastItem.Low){
+            stratArr.push(1) // console.log('second candle is 1');
+        } else stratArr.push(2) // console.log('second candle is 2');
+    } else {
+        if(thirdLastItem.Low < secondLastItem.Low) {
+            stratArr.push(2) // console.log('second candle is 2');
+        } else stratArr.push(3) // console.log('second candle is 3');
+    }
+    
+    // check last candle
+    if(secondLastItem.High > lastItem.High) {
+        if(secondLastItem.Low < lastItem.Low){
+            stratArr.push(1) // console.log('third candle is 1');
+        } else stratArr.push(2) // console.log('third candle is 2');
+    } else {
+        if(secondLastItem.Low < lastItem.Low) {
+            stratArr.push(2) // console.log('third candle is 2');
+        } else stratArr.push(3) // console.log('third candle is 3');
+    }
+    console.log(stratArr)
+}
+
 function renderCharts() {
     const chartsContainer = document.getElementById('chartsContainer');
     chartsContainer.innerHTML = ''; // Clear any existing charts
@@ -85,6 +127,10 @@ function renderCharts() {
                 }
             }
         });
+
+
+        
+        findStrat(stockData[ticker])
 
         chartCount++;
     });
