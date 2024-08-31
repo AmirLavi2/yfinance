@@ -15,6 +15,7 @@ function findStrat(stok) {
     let secondLastItem = stok[stok.length-2];
     let thirdLastItem = stok[stok.length-3];
     let fourthLastItem = stok[stok.length-4];
+    if(!lastItem || !secondLastItem || !thirdLastItem || !fourthLastItem) return 0;
     let stratArr = [];
     
     // check third from last candle
@@ -49,7 +50,7 @@ function findStrat(stok) {
             stratArr.push(2) // console.log('third candle is 2');
         } else stratArr.push(3) // console.log('third candle is 3');
     }
-    console.log(stratArr)
+    console.log(stok[0].ticker, stratArr)
 }
 
 function renderCharts() {
