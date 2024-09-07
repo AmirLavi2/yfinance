@@ -1,2 +1,4 @@
 js/node_modules/
 js/.env
+config.ini
+db.py
