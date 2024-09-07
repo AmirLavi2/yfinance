@@ -50,10 +50,22 @@ function findStrat(stok) {
             stratArr.push(2) // console.log('third candle is 2');
         } else stratArr.push(3) // console.log('third candle is 3');
     }
-    console.log(stok[0].ticker, stratArr)
+
+    // console.log(`Ticker:${stok[0].ticker}, Strat:${stratArr}`);
+    
+    if(stratArr[0] == 3 && stratArr[1] == 1 & stratArr[2] == 2) {
+        let diff = ((thirdLastItem.High-secondLastItem.High)/thirdLastItem.High)*100;
+        if(diff > 0) {
+            console.log(`Ticker:${stok[0].ticker}, Strat:${stratArr} 0-1 diff %:${diff}`);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function renderCharts() {
+    
     const chartsContainer = document.getElementById('chartsContainer');
     chartsContainer.innerHTML = ''; // Clear any existing charts
 
@@ -61,6 +73,11 @@ function renderCharts() {
     let chartCount = 0;
 
     Object.keys(stockData).forEach(ticker => {
+
+        if(!findStrat(stockData[ticker])) {
+            return;
+        }
+
         let candlestickData = stockData[ticker].map(data => ({
             x: Date.parse(data.Date),
             o: data.Open,
@@ -131,7 +148,7 @@ function renderCharts() {
 
 
         
-        findStrat(stockData[ticker])
+        // findStrat(stockData[ticker])
 
         chartCount++;
     });

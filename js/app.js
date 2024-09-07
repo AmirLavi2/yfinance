@@ -1,3 +1,5 @@
+// 1) gets the results from DB
+// 2) render them on the Browser
 const MY_SQL = require('mysql');
 const EXPRESS = require('express');
 const APP = EXPRESS();
@@ -33,7 +35,7 @@ connection.connect((err) => {
 });
 
 // Query to select all rows from the 'stocks' table
-const query = `SELECT * FROM stocks where Date > '2024-01-01'`;
+const query = `SELECT * FROM stocks where Date > '2024-08-28' AND Low > SMA150`;
 
 
 
@@ -48,8 +50,6 @@ function groupDataByTicker(data) {
     });
     return groupedData;
 }
-
-
 
 let data;
 

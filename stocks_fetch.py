@@ -1,3 +1,5 @@
+# 1) fetch the stocks from tickers file
+# 2) insert result to DB
 from my_modules import stock_utils
 import pandas as pd
 # ----------------------------------------------------------
