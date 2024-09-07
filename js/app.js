@@ -35,8 +35,7 @@ connection.connect((err) => {
 });
 
 // Query to select all rows from the 'stocks' table
-const query = `SELECT * FROM stocks where Date > '2024-08-28' AND Low > SMA150`;
-
+const query = `SELECT * FROM stocks`;
 
 
 // Function to group data by ticker

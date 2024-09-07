@@ -16,6 +16,16 @@
 </head>
 <body>
     <h1>Stocks list</h1>
+    <div id="filterContainer">
+        <label>
+            <input type="checkbox" id="filterAboveSMA150" checked>
+            Show stocks where Close is above SMA150
+        </label>
+        <button id="applyFiltersButton">Apply Filters</button>
+    </div>
+    
+    <div id="chartsContainer"></div>
+    
     <div id="chartsContainer"></div>
     <script src="stocks.js"></script>
 </body>
