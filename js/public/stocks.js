@@ -1,17 +1,21 @@
-const URL = 'http://localhost:8001';
-var socket = io.connect(URL);
+const URL = 'http://localhost:8001'; // Adjust the URL if necessary
 let stockData;
 
-socket.emit('pointAdd', 'hey from HTML');
-
-socket.on('chat message back', msg => {
-    stockData = msg;
-    console.log('chat message back');
-    // renderCharts();
-});
+// Fetch stock data using HTTP request
+function fetchStockData() {
+    fetch(`${URL}/stocks`)
+        .then(response => response.json())
+        .then(data => {
+            stockData = data;
+            console.log('server data recivied');
+            
+            // renderCharts(); // Render charts once data is received
+        })
+        .catch(error => console.error('Error fetching stock data:', error));
+}
 
 document.getElementById('applyFiltersButton').addEventListener('click', () => {
-    console.log('applyFiltersButton');
+    console.log('applyFiltersButton clicked');
     renderCharts();
 });
 
@@ -24,7 +28,7 @@ function findStrat(stok) {
     if(!lastItem || !secondLastItem || !thirdLastItem || !fourthLastItem) return 0;
     let stratArr = [];
     
-    // check third from last candle
+    // Check third from last candle
     if(fourthLastItem.High > thirdLastItem.High) {
         if(fourthLastItem.Low < thirdLastItem.Low){
             stratArr.push(1);
@@ -35,7 +39,7 @@ function findStrat(stok) {
         } else stratArr.push(3);
     }
     
-    // check second from last candle
+    // Check second from last candle
     if(thirdLastItem.High > secondLastItem.High) {
         if(thirdLastItem.Low < secondLastItem.Low){
             stratArr.push(1);
@@ -46,7 +50,7 @@ function findStrat(stok) {
         } else stratArr.push(3);
     }
     
-    // check last candle
+    // Check last candle
     if(secondLastItem.High > lastItem.High) {
         if(secondLastItem.Low < lastItem.Low){
             stratArr.push(1);
@@ -70,9 +74,15 @@ function findStrat(stok) {
 
 function renderCharts() {
     console.log('renderCharts');
-    
+    if(!stockData) {
+        console.log('wait more for the server data');
+        return;
+    }
+
     const filterAboveSMA150 = document.getElementById('filterAboveSMA150').checked;
-    
+    const filterSMA150Up = document.getElementById('filterSMA150Up').checked;
+    const filterStrat = document.getElementById('filterStrat').checked;
+
     const chartsContainer = document.getElementById('chartsContainer');
     chartsContainer.innerHTML = ''; // Clear any existing charts
 
@@ -82,13 +92,18 @@ function renderCharts() {
     Object.keys(stockData).forEach(ticker => {
         const stockItems = stockData[ticker];
         const lastItem = stockItems[stockItems.length - 1];
+        const secondLastItem = stockItems[stockItems.length - 2];
 
         // Apply SMA150 filter
         if (filterAboveSMA150 && lastItem.Close <= lastItem.SMA150) {
             return;
         }
 
-        if (!findStrat(stockData[ticker])) {
+        if (filterSMA150Up && secondLastItem && secondLastItem.SMA150 >= lastItem.SMA150) {    
+            return;
+        }
+
+        if (filterStrat && !findStrat(stockData[ticker])) {
             return;
         }
 
@@ -163,3 +178,6 @@ function renderCharts() {
         chartCount++;
     });
 }
+
+// Fetch data when the page loads
+fetchStockData();

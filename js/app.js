@@ -1,17 +1,13 @@
-// 1) gets the results from DB
-// 2) render them on the Browser
 const MY_SQL = require('mysql');
 const EXPRESS = require('express');
 const APP = EXPRESS();
 const BODY_PARSER = require('body-parser').json();
 const CORS = require('cors')();
 const HTTP_SERVER = require('http').createServer(APP);
-const { Server: SOCKET_SERVER } = require('socket.io');
 
 APP.use(BODY_PARSER);
+APP.use(CORS); // Enable CORS if needed
 APP.use(EXPRESS.static('public'));
-
-HTTP_SERVER.listen(process.env.HTTP_PORT, () => console.log('http://localhost:' + process.env.HTTP_PORT));
 
 // MySQL database configuration
 const db_config = {
@@ -34,10 +30,6 @@ connection.connect((err) => {
     console.log('Connected to database as ID ' + connection.threadId);
 });
 
-// Query to select all rows from the 'stocks' table
-const query = `SELECT * FROM stocks`;
-
-
 // Function to group data by ticker
 function groupDataByTicker(data) {
     const groupedData = {};
@@ -50,39 +42,22 @@ function groupDataByTicker(data) {
     return groupedData;
 }
 
-let data;
+// Define the endpoint to get stocks data
+APP.get('/stocks', (req, res) => {
+    const query = `SELECT * FROM stocks where Date > '2024-08-20'`;
+    
+    // Execute the query
+    connection.query(query, (err, rows) => {
+        if (err) {
+            console.error('Error executing query: ' + err.stack);
+            res.status(500).json({ error: 'Database query error' });
+            return;
+        }
 
-// Execute the query
-connection.query(query, (err, rows) => {
-    const IO = new SOCKET_SERVER(HTTP_SERVER);
-
-    IO.on('connection', socket => {
-        socket.on('chat msg', msg => {
-            console.log('got this message from client:', msg);
-            IO.emit('chat message back', data);
-        });
-
-        socket.on('pointAdd', msg => {
-            console.log(msg);
-
-            IO.emit('chat message back', data);
-        });
-
+        const data = groupDataByTicker(rows);
+        res.json(data);
     });
-
-    if (err) {
-        console.error('Error executing query: ' + err.stack);
-        return;
-    }
-
-    data = rows;
-    data = groupDataByTicker(data);
-    // console.log(data);
-    // Process the rows
-    // rows.forEach((row) => {
-    //     // console.log(row);
-    // });
-
-    // Close the connection
-    connection.end();
 });
+
+// Start the server
+HTTP_SERVER.listen(process.env.HTTP_PORT, () => console.log('http://localhost:' + process.env.HTTP_PORT));
